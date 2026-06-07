@@ -1,8 +1,8 @@
-import "dotenv/config";
 import libraryItems from "./routes/libraryItems";
 import categories from "./routes/categories";
 import express from "express";
 import cors from "cors";
+import "dotenv/config";
 
 const app = express();
 

@@ -12,10 +12,13 @@ const schema = z.object({
   borrower: z.string().optional(),
   borrowDate: z.date().optional(),
   author: z.string().optional(),
-  nbrPages: z.number({ error: "Number of pages must be a number." }).positive().optional(),
+  nbrPages: z
+    .number({ error: "Number of pages must be a number." })
+    .min(0)
+    .optional(),
   runTimeMinutes: z
     .number({ error: "Runtime must be a number." })
-    .positive()
+    .min(0)
     .optional(),
 });
 

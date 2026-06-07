@@ -1,5 +1,5 @@
-import { validate } from "../schemas/category";
 import { PrismaClient } from "../generated/prisma/client";
+import { validate } from "../schemas/category";
 import express from "express";
 
 const prisma = new PrismaClient();

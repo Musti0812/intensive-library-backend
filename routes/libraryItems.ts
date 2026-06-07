@@ -1,6 +1,6 @@
+import { validate, validateCheckout } from "../schemas/libraryItem";
 import { PrismaClient } from "../generated/prisma/client";
 import express from "express";
-import { validate, validateCheckout } from "../schemas/libraryItem";
 
 const prisma = new PrismaClient();
 
