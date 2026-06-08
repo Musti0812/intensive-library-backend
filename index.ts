@@ -6,7 +6,15 @@ import "dotenv/config";
 
 const app = express();
 
-app.use(cors({ origin: ["http://localhost:5173", "http://localhost:5174"] }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "https://intensive-library-4rod.onrender.com",
+    ],
+  }),
+);
 app.use(express.json());
 app.use("/api/categories", categories);
 app.use("/api/libraryitems", libraryItems);
