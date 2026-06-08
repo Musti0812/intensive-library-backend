@@ -7,19 +7,40 @@ const prisma = new PrismaClient();
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const getCategories = await prisma.category.findMany();
+  const getCategories = await prisma.category.findMany({
+    include: {
+      _count: {
+        select: { items: true },
+      },
+    },
+  });
 
-  return res.send(getCategories);
+  const categories = getCategories.map((category) => ({
+    id: category.id,
+    name: category.name,
+    itemsCount: category._count.items,
+  }));
+
+  return res.send(categories);
 });
 
 router.get("/:id", async (req, res) => {
   const getSingleCategory = await prisma.category.findFirst({
     where: { id: req.params.id },
+    include: {
+      _count: {
+        select: { items: true },
+      },
+    },
   });
 
   if (!getSingleCategory) return res.status(404).send("Category not found");
 
-  return res.send(getSingleCategory);
+  return res.send({
+    id: getSingleCategory.id,
+    name: getSingleCategory.name,
+    itemsCount: getSingleCategory._count.items,
+  });
 });
 
 router.post("/", async (req, res) => {
