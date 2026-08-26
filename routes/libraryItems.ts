@@ -6,6 +6,8 @@ const prisma = new PrismaClient();
 
 const router = express.Router();
 
+const LOAN_PERIOD_DAYS = 14;
+
 router.get("/types", async (req, res) => {
   const getTypes = await prisma.libraryItemType.findMany();
 
@@ -146,7 +148,16 @@ router.delete("/:id", async (req, res) => {
 });
 
 router.post("/:id/checkout", async (req, res) => {
-  const validation = validateCheckout(req.body);
+  const borrowDate = new Date();
+  // checkout timestamp + 1,209,600,000 milliseconds
+  const dueDate = new Date(
+    borrowDate.getTime() + LOAN_PERIOD_DAYS * 24 * 60 * 60 * 1000,
+  );
+
+  const validation = validateCheckout({
+    borrower: req.body.borrower,
+    dueDate,
+  });
 
   if (!validation.success)
     return res.status(400).send(validation.error.issues[0].message);
@@ -168,14 +179,19 @@ router.post("/:id/checkout", async (req, res) => {
   if (!findLibraryItem.isBorrowable)
     return res.status(400).send("This library item is not borrowable");
 
-  if (findLibraryItem.borrower || findLibraryItem.borrowDate)
+  if (
+    findLibraryItem.borrower ||
+    findLibraryItem.borrowDate ||
+    findLibraryItem.dueDate
+  )
     return res.status(400).send("This library item is already checked out");
 
   const checkedOutLibraryItem = await prisma.libraryItem.update({
     where: { id: req.params.id },
     data: {
-      borrower: req.body.borrower,
-      borrowDate: new Date(),
+      borrower: validation.data.borrower,
+      borrowDate,
+      dueDate: validation.data.dueDate,
     },
     include: {
       category: true,
@@ -199,6 +215,7 @@ router.post("/:id/checkin", async (req, res) => {
     data: {
       borrower: null,
       borrowDate: null,
+      dueDate: null,
     },
     include: {
       category: true,

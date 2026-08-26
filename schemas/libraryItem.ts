@@ -24,6 +24,7 @@ const schema = z.object({
 
 const checkoutSchema = z.object({
   borrower: z.string().min(1, { message: "Borrower is required." }),
+  dueDate: z.date({ error: "Due date must be a valid date." }),
 });
 
 type FormData = z.infer<typeof schema>;

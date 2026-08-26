@@ -38,6 +38,7 @@ model LibraryItem {
   isBorrowable   Boolean         @default(true)
   borrower       String?
   borrowDate     DateTime?
+  dueDate        DateTime?
   author         String?
   nbrPages       Int?
   runTimeMinutes Int?
