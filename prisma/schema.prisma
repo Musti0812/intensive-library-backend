@@ -24,7 +24,6 @@ model Category {
   id    String        @id @default(cuid())
   name  String        @unique
   items LibraryItem[]
-
 }
 
 model LibraryItem {
@@ -34,7 +33,7 @@ model LibraryItem {
   libraryItemTypeId String
   libraryItemType LibraryItemType  @relation(fields: [libraryItemTypeId], references: [id])
   categoryId     String
-  category       Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  category       Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict) // Don't delete the category if it has items in side that category
   isBorrowable   Boolean         @default(true)
   borrower       String?
   borrowDate     DateTime?
@@ -42,5 +41,5 @@ model LibraryItem {
   author         String?
   nbrPages       Int?
   runTimeMinutes Int?
-
+  imageUrl       String?
 }

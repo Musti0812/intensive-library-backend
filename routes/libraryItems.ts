@@ -35,7 +35,9 @@ router.get("/:id", async (req, res) => {
   });
 
   if (!findLibraryItem)
-    return res.status(404).send("The library item with the given ID was not found");
+    return res
+      .status(404)
+      .send("The library item with the given ID was not found");
 
   return res.send(findLibraryItem);
 });
@@ -45,6 +47,8 @@ router.post("/", async (req, res) => {
 
   if (!validation.success)
     return res.status(400).send(validation.error.issues[0].message);
+
+  // To make sure the provided category & type ids actually exist so that the item has a valid category & type
 
   const getCategory = await prisma.category.findFirst({
     where: { id: req.body.categoryId },
@@ -58,7 +62,9 @@ router.post("/", async (req, res) => {
   });
 
   if (!getType)
-    return res.status(404).send("The library item type with the given ID was not found");
+    return res
+      .status(404)
+      .send("The library item type with the given ID was not found");
 
   const createLibraryItem = await prisma.libraryItem.create({
     data: {
@@ -70,7 +76,9 @@ router.post("/", async (req, res) => {
       author: req.body.author,
       nbrPages: req.body.nbrPages,
       runTimeMinutes: req.body.runTimeMinutes,
+      imageUrl: validation.data.imageUrl || undefined,
     },
+    // To make sure `createLibraryItem` contains the corresponding category & libraryItemType, not just their ids.
     include: {
       category: true,
       libraryItemType: true,
@@ -83,6 +91,8 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const findLibraryItem = await prisma.libraryItem.findFirst({
     where: { id: req.params.id },
+    // To make sure `findLibraryItem` contains the corresponding category & libraryItemType, not just their ids.
+    // But looking afterwards, it wasn't actually necessary.
     include: {
       category: true,
       libraryItemType: true,
@@ -90,12 +100,16 @@ router.put("/:id", async (req, res) => {
   });
 
   if (!findLibraryItem)
-    return res.status(404).send("The library item with the given ID was not found");
+    return res
+      .status(404)
+      .send("The library item with the given ID was not found");
 
   const validation = validate(req.body);
 
   if (!validation.success)
     return res.status(400).send(validation.error.issues[0].message);
+
+  // To make sure the provided category & type ids actually exist so that the item has a valid category & type
 
   const getCategory = await prisma.category.findFirst({
     where: { id: req.body.categoryId },
@@ -109,7 +123,9 @@ router.put("/:id", async (req, res) => {
   });
 
   if (!getType)
-    return res.status(404).send("The library item type with the given ID was not found");
+    return res
+      .status(404)
+      .send("The library item type with the given ID was not found");
 
   const updatedLibraryItem = await prisma.libraryItem.update({
     where: { id: req.params.id },
@@ -122,7 +138,9 @@ router.put("/:id", async (req, res) => {
       author: req.body.author,
       nbrPages: req.body.nbrPages,
       runTimeMinutes: req.body.runTimeMinutes,
+      imageUrl: validation.data.imageUrl || undefined,
     },
+    // To make sure `updatedLibraryItem` contains the corresponding category & libraryItemType, not just their ids.
     include: {
       category: true,
       libraryItemType: true,
@@ -138,7 +156,9 @@ router.delete("/:id", async (req, res) => {
   });
 
   if (!findLibraryItem)
-    return res.status(404).send("The library item with the given ID was not found");
+    return res
+      .status(404)
+      .send("The library item with the given ID was not found");
 
   const deletedLibraryItem = await prisma.libraryItem.delete({
     where: { id: req.params.id },
@@ -164,6 +184,7 @@ router.post("/:id/checkout", async (req, res) => {
 
   const findLibraryItem = await prisma.libraryItem.findFirst({
     where: { id: req.params.id },
+    // To make sure `findLibraryItem` contains the corresponding category & libraryItemType, not just their ids.
     include: {
       category: true,
       libraryItemType: true,
@@ -171,7 +192,9 @@ router.post("/:id/checkout", async (req, res) => {
   });
 
   if (!findLibraryItem)
-    return res.status(404).send("The library item with the given ID was not found");
+    return res
+      .status(404)
+      .send("The library item with the given ID was not found");
 
   if (findLibraryItem.libraryItemType.name.toLowerCase() === "reference book")
     return res.status(400).send("A reference book cannot be borrowed");
@@ -208,7 +231,9 @@ router.post("/:id/checkin", async (req, res) => {
   });
 
   if (!findLibraryItem)
-    return res.status(404).send("The library item with the given ID was not found");
+    return res
+      .status(404)
+      .send("The library item with the given ID was not found");
 
   const checkedInLibraryItem = await prisma.libraryItem.update({
     where: { id: req.params.id },

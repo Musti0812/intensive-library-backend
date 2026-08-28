@@ -20,6 +20,7 @@ const schema = z.object({
     .number({ error: "Runtime must be a number." })
     .min(0)
     .optional(),
+  imageUrl: z.string().optional(),
 });
 
 const checkoutSchema = z.object({
